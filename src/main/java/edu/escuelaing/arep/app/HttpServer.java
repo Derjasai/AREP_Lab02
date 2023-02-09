@@ -4,8 +4,7 @@ import java.net.*;
 import java.io.*;
 import java.util.HashMap;
 
-import edu.escuelaing.arep.app.dinamico.PagesService;
-import edu.escuelaing.arep.app.dinamico.RESTService;
+import edu.escuelaing.arep.app.services.PagesService;
 import org.json.*;
 
 /**
@@ -97,16 +96,21 @@ public class HttpServer {
         serverSocket.close();
     }
 
+    /**
+     * Ejecutar un servicio indicado por el path /apps/
+     * @param serviceName El nombre del servicio o recurso a ejecutar
+     * @return EL Header y Body del recurso solicitado, en caso de no encontrarse el recurso se le dirigirá a un 404
+     */
     private String executeService(String serviceName) {
         PagesService ps = PagesService.getInstance();
         try {
             String type = serviceName.split("\\.")[1];
-            String header = ps.getHeader(type);
+            String header = ps.getHeader(type, "200 OK");
             String body = ps.getResponse("src/main/resources/" + serviceName);
             return header + body;
         }
         catch (RuntimeException e){
-            String header = ps.getHeader("html");
+            String header = ps.getHeader("html", "404 Not Found");
             String body = ps.getResponse("src/main/resources/404.html");
             return header + body;
         }
